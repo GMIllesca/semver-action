@@ -39,7 +39,15 @@ class Version {
     semver;
     constructor(raw) {
         this.raw = raw;
-        this.semver = semver.coerce(raw) ?? new semver.SemVer('0.0.0');
+        // Extraer la parte semántica de la versión
+        const versionMatch = raw.match(/(\d+\.\d+\.\d+)/);
+        if (versionMatch) {
+            this.semver = new semver.SemVer(versionMatch[0]);
+        }
+        else {
+            this.semver = new semver.SemVer('0.0.0');
+        }
+        core.info(`Parsed version: ${this.semver.raw} from raw: ${raw}`);
     }
 }
 exports.Version = Version;
