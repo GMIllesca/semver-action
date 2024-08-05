@@ -55,24 +55,28 @@ export function filterAndSortVersions(
   prefix: string,
   includePrereleases: boolean
 ): Version[] {
-  return versions
-    .filter(version => {
-      let check = semver.coerce(version.raw) != null
-      if (
-        !includePrereleases &&
-        (version.semver.build.length || version.semver.prerelease.length)
-      ) {
-        check = false
-      }
-      check = check && version.raw.startsWith(prefix) ? true : false
-      if (!check) {
-        core.info(`filtering out ${version.raw}`)
-      }
-      return check
-    })
-    .sort((x, y) => {
-      return semver.compare(y.semver, x.semver)
-    })
+  core.info(`Filtering versions with prefix: ${prefix}`)
+  const filteredVersions = versions.filter(version => {
+    core.info(`Checking version: ${version.raw}`)
+    let check = semver.coerce(version.raw) != null
+    if (
+      !includePrereleases &&
+      (version.semver.build.length || version.semver.prerelease.length)
+    ) {
+      check = false
+    }
+    check = check && version.raw.startsWith(prefix)
+    if (!check) {
+      core.info(`Filtering out ${version.raw}`)
+    }
+    return check
+  })
+  core.info(`Filtered versions: ${JSON.stringify(filteredVersions)}`)
+  const sortedVersions = filteredVersions.sort((x, y) => {
+    return semver.compare(y.semver, x.semver)
+  })
+  core.info(`Sorted versions: ${JSON.stringify(sortedVersions)}`)
+  return sortedVersions
 }
 
 export function bumpVersion(
