@@ -83,14 +83,23 @@ export function bumpVersion(
   return new Version(tmp.semver.inc(incrementLevel).raw)
 }
 
+export function getIncrementLevelFromTitle(title: string): semver.ReleaseType {
+  if (title.includes('(MAJOR)')) {
+    return 'major'
+  } else if (title.includes('(MINOR)')) {
+    return 'minor'
+  } else if (title.includes('(PATCH)')) {
+    return 'patch'
+  } else {
+    return 'patch'
+  }
+}
+
 export async function run(): Promise<void> {
   try {
     const githubToken: string = core.getInput('token')
     const prefix = core.getInput('prefix')
     const source: SourceType = core.getInput('source') as SourceType
-    const incrementLevel: semver.ReleaseType = core.getInput(
-      'incrementLevel'
-    ) as semver.ReleaseType
     const includePrereleases: boolean =
       core.getInput('includePrereleases') === 'true'
     const octokit = await getOctokitClient(githubToken)
@@ -113,6 +122,8 @@ export async function run(): Promise<void> {
     )
     const currentVersion =
       filteredAndSortedVersions?.[0] ?? new Version('0.0.0')
+    const title = github.context.payload.head_commit?.message ?? ''
+    const incrementLevel = getIncrementLevelFromTitle(title)
     core.debug(`${currentVersion.semver.raw} bumping to next version`)
     const nextVersion = bumpVersion(currentVersion, incrementLevel)
     core.setOutput('currentVersion', currentVersion.semver.raw)

@@ -6,9 +6,6 @@ branding:
   color: purple
 
 inputs:
-  incrementLevel:
-    required: true
-    description: "Increment a version by the specified level. Can be one of: major, minor, patch, premajor, preminor, prepatch, or prerelease"
   token:
     required: true
     description: GitHub token to access API
