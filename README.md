@@ -15,7 +15,6 @@ jobs:
         id: version
         uses: flatherskevin/semver-action@v1
         with:
-          incrementLevel: patch
           source: tags
       - name: Release
         uses: softprops/action-gh-release@v1

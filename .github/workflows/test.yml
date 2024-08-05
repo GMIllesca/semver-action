@@ -24,6 +24,5 @@ jobs:
       - name: Test bump version
         uses: ./
         with:
-          incrementLevel: patch
           source: tags
           prefix: ""
