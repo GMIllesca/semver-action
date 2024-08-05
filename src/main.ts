@@ -66,7 +66,7 @@ export function filterAndSortVersions(
       }
       check = check && version.raw.startsWith(prefix) ? true : false
       if (!check) {
-        core.debug(`filtering out ${version.raw}`)
+        core.info(`filtering out ${version.raw}`)
       }
       return check
     })
@@ -103,18 +103,18 @@ export async function run(): Promise<void> {
     const includePrereleases: boolean =
       core.getInput('includePrereleases') === 'true'
     const octokit = await getOctokitClient(githubToken)
-    core.debug('client created')
+    core.info('client created')
     let allVersions: Version[] = []
     if (source === 'tags') {
-      core.debug('coercing with tags')
+      core.info('coercing with tags')
       allVersions = await getVersionsFromTags(octokit)
     } else if (source === 'releases') {
-      core.debug('coercing with releases')
+      core.info('coercing with releases')
       allVersions = await getVersionsFromReleases(octokit)
     } else {
       throw Error(`${source} is not a valid value for "source"`)
     }
-    core.debug(`filtering and sorting ${allVersions.length} versions`)
+    core.info(`filtering and sorting ${allVersions.length} versions`)
     const filteredAndSortedVersions: Version[] = filterAndSortVersions(
       allVersions,
       prefix,
@@ -124,16 +124,16 @@ export async function run(): Promise<void> {
       filteredAndSortedVersions?.[0] ?? new Version('0.0.0')
     const title = github.context.payload.head_commit?.message ?? ''
     const incrementLevel = getIncrementLevelFromTitle(title)
-    core.debug(`${currentVersion.semver.raw} bumping to next version`)
+    core.info(`${currentVersion.semver.raw} bumping to next version`)
     const nextVersion = bumpVersion(currentVersion, incrementLevel)
     core.setOutput('currentVersion', currentVersion.semver.raw)
     core.setOutput('nextVersion', nextVersion.semver.raw)
-    core.debug(
+    core.info(
       `${currentVersion.semver.raw} bumped to ${nextVersion.semver.raw}`
     )
   } catch (error) {
     if (error instanceof Error) {
-      core.debug(error.stack ?? error.message)
+      core.info(error.stack ?? error.message)
       core.setFailed(error)
     }
   }

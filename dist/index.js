@@ -79,7 +79,7 @@ function filterAndSortVersions(versions, prefix, includePrereleases) {
         }
         check = check && version.raw.startsWith(prefix) ? true : false;
         if (!check) {
-            core.debug(`filtering out ${version.raw}`);
+            core.info(`filtering out ${version.raw}`);
         }
         return check;
     })
@@ -115,33 +115,33 @@ async function run() {
         const source = core.getInput('source');
         const includePrereleases = core.getInput('includePrereleases') === 'true';
         const octokit = await getOctokitClient(githubToken);
-        core.debug('client created');
+        core.info('client created');
         let allVersions = [];
         if (source === 'tags') {
-            core.debug('coercing with tags');
+            core.info('coercing with tags');
             allVersions = await getVersionsFromTags(octokit);
         }
         else if (source === 'releases') {
-            core.debug('coercing with releases');
+            core.info('coercing with releases');
             allVersions = await getVersionsFromReleases(octokit);
         }
         else {
             throw Error(`${source} is not a valid value for "source"`);
         }
-        core.debug(`filtering and sorting ${allVersions.length} versions`);
+        core.info(`filtering and sorting ${allVersions.length} versions`);
         const filteredAndSortedVersions = filterAndSortVersions(allVersions, prefix, includePrereleases);
         const currentVersion = filteredAndSortedVersions?.[0] ?? new Version('0.0.0');
         const title = github.context.payload.head_commit?.message ?? '';
         const incrementLevel = getIncrementLevelFromTitle(title);
-        core.debug(`${currentVersion.semver.raw} bumping to next version`);
+        core.info(`${currentVersion.semver.raw} bumping to next version`);
         const nextVersion = bumpVersion(currentVersion, incrementLevel);
         core.setOutput('currentVersion', currentVersion.semver.raw);
         core.setOutput('nextVersion', nextVersion.semver.raw);
-        core.debug(`${currentVersion.semver.raw} bumped to ${nextVersion.semver.raw}`);
+        core.info(`${currentVersion.semver.raw} bumped to ${nextVersion.semver.raw}`);
     }
     catch (error) {
         if (error instanceof Error) {
-            core.debug(error.stack ?? error.message);
+            core.info(error.stack ?? error.message);
             core.setFailed(error);
         }
     }
