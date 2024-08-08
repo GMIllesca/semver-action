@@ -72,7 +72,9 @@ export function filterAndSortVersions(
     ) {
       check = false
     }
-    check = check && version.raw.startsWith(prefix)
+    check =
+      check &&
+      (version.raw.includes(prefix) || version.semver.raw.includes(prefix))
     if (!check) {
       core.info(`Filtering out ${version.raw}`)
     }

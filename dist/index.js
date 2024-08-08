@@ -86,7 +86,9 @@ function filterAndSortVersions(versions, prefix, includePrereleases) {
             (version.semver.build.length || version.semver.prerelease.length)) {
             check = false;
         }
-        check = check && version.raw.startsWith(prefix);
+        check =
+            check &&
+                (version.raw.includes(prefix) || version.semver.raw.includes(prefix));
         if (!check) {
             core.info(`Filtering out ${version.raw}`);
         }
